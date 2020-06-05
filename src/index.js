@@ -14,11 +14,10 @@ const onRedirectCallback = (appState) => {
       : window.location.pathname
   );
 };
-
 ReactDOM.render(
   <Auth0Provider
-    domain={process.env.DOMAIN}
-    clientId={process.env.clientId}
+    domain="actionify.auth0.com"
+    clientId="xuAv87ZpcWfabbPkcaPrHzrfl1lse4hJ"
     redirect_uri={window.location.origin}
     onRedirectCallback={onRedirectCallback}
   >

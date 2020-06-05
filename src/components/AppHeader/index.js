@@ -5,7 +5,6 @@ import styles from "./AppHeader.css"; // eslint-disable-line
 
 const AppHeader = (props) => {
   const test = useAuth0();
-  console.log(test);
   const { isAuthenticated, loginWithRedirect, logout } = useAuth0();
 
   return (
@@ -22,7 +21,7 @@ const AppHeader = (props) => {
         </div>
         <div className="deploy-button-wrapper">
           {" "}
-          test
+          test!!!
           {!isAuthenticated && (
             <button onClick={() => loginWithRedirect({})}>Log in</button>
           )}
