@@ -1,18 +1,17 @@
-import React from "react";
-import { useAuth0 } from "../../utils/react-auth0-spa";
-import logo from "../../assets/logo.svg";
+import React, { useContext } from "react";
+// import { useAuth0 } from "../../utils/react-auth0-spa";
+import { Link } from "react-router-dom";
+import { Auth0Context } from "../../contexts/auth0-context";
 import styles from "./AppHeader.css"; // eslint-disable-line
 
 const AppHeader = (props) => {
-  const test = useAuth0();
-  const { isAuthenticated, loginWithRedirect, logout } = useAuth0();
+  const { isAuthenticated, login, logout, user } = useContext(Auth0Context);
 
   return (
     <header className="app-header">
       <div className="app-title-wrapper">
         <div className="app-title-wrapper">
           <div className="app-left-nav">
-            <img src={logo} className="app-logo" alt="logo" />
             <div className="app-title-text">
               <h1 className="app-title">Netlify + Fauna DB</h1>
               <p className="app-intro">Using FaunaDB & Netlify functions</p>
@@ -20,15 +19,40 @@ const AppHeader = (props) => {
           </div>
         </div>
         <div className="deploy-button-wrapper">
-          {" "}
+          {/* {" "}
           test!!!
           {!isAuthenticated && (
             <button onClick={() => loginWithRedirect({})}>Log in</button>
           )}
-          {isAuthenticated && <button onClick={() => logout()}>Log out</button>}
+          {isAuthenticated && <button onClick={() => logout()}>Log out</button>} */}
+          {!isAuthenticated && <button onClick={login}>Login</button>}
+          {isAuthenticated && user && (
+            <>
+              <button>{user.name}</button>
+              <button onClick={logout}>Logout</button>
+            </>
+          )}
         </div>
       </div>
     </header>
+    // <div className="site-header">
+    //   {/* stuff on the left */}
+    //   <div>
+    //     <Link to="/">Home</Link>
+    //     <Link to="/dashboard">Dashboard</Link>
+    //   </div>
+
+    //   {/* stuff on the right */}
+    //   <div>
+    // {!isAuthenticated && <button onClick={login}>Login</button>}
+    // {isAuthenticated && user && (
+    //   <>
+    //     <button>{user.name}</button>
+    //     <button onClick={logout}>Logout</button>
+    //   </>
+    // )}
+    //   </div>
+    // </div>
   );
 };
 
