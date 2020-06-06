@@ -46,13 +46,14 @@ export default class ContentEditable extends React.Component {
     );
   };
   render() {
-    const { onChange, children, html, editKey, tagName } = this.props;
+    const { onChange, children, html, editKey, tagName, field } = this.props;
     const content = html || children;
     return (
       <Editable
         tagName={tagName}
         data-key={editKey}
         className={"editable"}
+        data-field={field}
         onClick={this.handleClick}
         onBlur={this.handleClickOutside}
         html={content}

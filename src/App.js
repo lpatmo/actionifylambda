@@ -20,6 +20,8 @@ function App() {
   const [showMenu, setShowMenu] = useState(false);
   const inputEl = useRef(null);
 
+  console.log(input);
+
   useEffect(() => {
     /* Track a page view */
     analytics.page();
@@ -48,31 +50,53 @@ function App() {
     });
   }, []);
 
-  const handleInputChange = (e) =>
+  function removeOptimisticTodo(todos) {
+    // return all 'real' todos
+    return todos.filter((todo) => {
+      return todo.ref;
+    });
+  }
+
+  function getTodoId(todo) {
+    if (!todo.ref) {
+      return null;
+    }
+    return todo.ref["@ref"].id;
+  }
+
+  const handleInputChange = (e) => {
+    console.log(e);
     setInput({
       ...input,
       [e.currentTarget.name]: e.currentTarget.value,
     });
+  };
 
   const saveTodo = (e) => {
     e.preventDefault();
-    const todoValue = input.name;
-    console.log(todoValue);
+    // const todoValue = input.description;
+    // const todoUrl = input.url;
+    // console.log(todoValue);
 
-    if (!todoValue) {
-      alert("Please add Todo title");
-      inputEl.focus();
-      return false;
-    }
+    Object.keys(input).forEach((key) => {
+      if (!input[key]) {
+        alert(`Please add a ${key}`);
+        inputEl.current.focus();
+        return false;
+      }
+    }); //Validation for if field is empty
 
     // reset input to empty
     // inputElement.value = "";
     setInput({});
 
-    const todoInfo = {
-      title: todoValue,
-      completed: false,
-    };
+    // const todoInfo = {
+    //   title: todoValue,
+    //   url: todoUrl,
+    //   completed: false,
+    // };
+
+    const todoInfo = { ...input, completed: false };
     // Optimistically add todo to UI
     const newTodoArray = [
       {
@@ -97,7 +121,7 @@ function App() {
         /* Track a custom event */
         analytics.track("todoCreated", {
           category: "todos",
-          label: todoValue,
+          label: input.description,
         });
         // remove temporaryValue from state and persist API response
         const persistedState = removeOptimisticTodo(todos).concat(response);
@@ -222,11 +246,22 @@ function App() {
   const updateTodoTitle = (event, currentValue) => {
     let isDifferent = false;
     const todoId = event.target.dataset.key;
+    const field = event.target.dataset.field;
+    // console.log(event.currentTarget.name);
+    console.log(event);
+    console.log(currentValue);
+    console.log(todoId);
+    console.log(field);
 
-    const updatedTodos = this.state.todos.map((todo, i) => {
-      const id = getTodoId(todo);
-      if (id === todoId && todo.data.title !== currentValue) {
-        todo.data.title = currentValue;
+    const updatedTodos = todos.map((todo, i) => {
+      const id = getTodoId(todo) + "-" + field;
+      console.log(todo);
+      console.log(id);
+      console.log(todoId);
+      console.log(event);
+      console.log(event.target);
+      if (id === todoId && todo.data[field] !== currentValue) {
+        todo.data[field] = currentValue;
         isDifferent = true;
       }
       return todo;
@@ -256,22 +291,28 @@ function App() {
     //     }
     //   );
     // }
-    setTodos(updatedTodos);
-    api
-      .update(todoId, {
-        title: currentValue,
-      })
-      .then(() => {
-        console.log(`update todo ${todoId}`, currentValue);
-        analytics.track("todoUpdated", {
-          category: "todos",
-          label: currentValue,
+    if (isDifferent) {
+      console.log("UPDATE");
+      console.log(field);
+      setTodos(updatedTodos);
+      console.log(todoId);
+      api
+        .update(todoId.split("-")[0], {
+          [field]: currentValue,
+        })
+        .then(() => {
+          console.log(`update todo ${todoId}`, currentValue);
+          analytics.track("todoUpdated", {
+            category: "todos",
+            label: currentValue,
+          });
+        })
+        .catch((e) => {
+          console.log("An API error occurred", e);
         });
-      })
-      .catch((e) => {
-        console.log("An API error occurred", e);
-      });
+    }
   };
+
   const clearCompleted = () => {
     // const { todos } = this.state;
 
@@ -370,6 +411,7 @@ function App() {
 
     return todosByDate.map((todo, i) => {
       const { data, ref } = todo;
+      console.log(todo);
       const id = getTodoId(todo);
       // only show delete button after create API response returns
       let deleteButton;
@@ -400,13 +442,33 @@ function App() {
               <use xlinkHref="#todo__check" className="todo__check"></use>
             </svg>
             <div className="todo-list-title">
-              <ContentEditable
+              {Object.keys(data).map((field) => {
+                return (
+                  <ContentEditable
+                    key={`${id}-${field}`}
+                    field={field}
+                    tagName="span"
+                    editKey={`${id}-${field}`}
+                    onBlur={updateTodoTitle} // save on enter/blur
+                    html={data[field]}
+                    // onChange={this.handleDataChange} // save on change
+                  />
+                );
+              })}
+              {/* <ContentEditable
                 tagName="span"
-                editKey={id}
+                editKey={`${id}-description`}
                 onBlur={updateTodoTitle} // save on enter/blur
-                html={data.title}
+                html={data.description}
                 // onChange={this.handleDataChange} // save on change
               />
+              <ContentEditable
+                tagName="span"
+                editKey={`${id}-url`}
+                onBlur={updateTodoTitle} // save on enter/blur
+                html={data.url}
+                // onChange={this.handleDataChange} // save on change
+              /> */}
             </div>
           </label>
           {deleteButton}
@@ -428,9 +490,17 @@ function App() {
             <input
               className="todo-create-input"
               placeholder="Add a todo item"
-              name="name"
+              name="description"
               // ref={(el) => (inputElement = el)}
               ref={inputEl}
+              onChange={handleInputChange}
+              autoComplete="off"
+              style={{ marginRight: 20 }}
+            />
+            <input
+              className="todo-create-input"
+              placeholder="URL"
+              name="url"
               onChange={handleInputChange}
               autoComplete="off"
               style={{ marginRight: 20 }}
@@ -455,17 +525,3 @@ function App() {
 // }
 
 export default App;
-
-function removeOptimisticTodo(todos) {
-  // return all 'real' todos
-  return todos.filter((todo) => {
-    return todo.ref;
-  });
-}
-
-function getTodoId(todo) {
-  if (!todo.ref) {
-    return null;
-  }
-  return todo.ref["@ref"].id;
-}
