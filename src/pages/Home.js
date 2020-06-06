@@ -15,8 +15,6 @@ function Home() {
   //   showMenu: false,
   // };
 
-  const { getToken } = useAuth0();
-
   const [input, setInput] = useState({});
   const [todos, setTodos] = useState([]);
   const [showMenu, setShowMenu] = useState(false);

@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import AppHeader from "./components/AppHeader";
-import Dashboard from "./pages/Dashboard";
+import Profile from "./pages/Profile";
 import Home from "./pages/Home";
 import PrivateRoute from "./components/PrivateRoute";
 import { useAuth0 } from "./contexts/auth0-context";
@@ -16,7 +16,7 @@ function App() {
 
   useEffect(() => {
     getUserData();
-  }, [getUserData]);
+  }, []);
 
   async function getUserData() {
     const token = await getToken();
@@ -36,8 +36,8 @@ function App() {
 
         {/* routes */}
         <Switch>
-          <PrivateRoute path="/dashboard">
-            <Dashboard />
+          <PrivateRoute path="/profile">
+            <Profile />
           </PrivateRoute>
           <Route path="/" exact={true}>
             <Home />
