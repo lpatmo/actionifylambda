@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useContext } from "react";
 import ContentEditable from "../components/ContentEditable";
 import SettingsMenu from "../components/SettingsMenu";
 import SettingsIcon from "../components/SettingsIcon";
@@ -7,7 +7,7 @@ import api from "../utils/api";
 import sortByDate from "../utils/sortByDate";
 import isLocalHost from "../utils/isLocalHost";
 import "../App.css";
-import { useAuth0 } from "../contexts/auth0-context";
+import { Auth0Context } from "../contexts/auth0-context";
 
 function Home() {
   // state = {
@@ -19,8 +19,9 @@ function Home() {
   const [todos, setTodos] = useState([]);
   const [showMenu, setShowMenu] = useState(false);
   const inputEl = useRef(null);
+  const { user } = useContext(Auth0Context);
 
-  console.log(input);
+  console.log(user);
 
   useEffect(() => {
     /* Track a page view */
@@ -96,7 +97,7 @@ function Home() {
     //   completed: false,
     // };
 
-    const todoInfo = { ...input, completed: false };
+    const todoInfo = { ...input, completed: false, author: user.sub };
     // Optimistically add todo to UI
     const newTodoArray = [
       {
