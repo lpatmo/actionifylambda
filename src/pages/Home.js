@@ -51,6 +51,14 @@ function Home() {
     });
   }, []);
 
+  function isLoggedIn() {
+    if (!user) {
+      alert("Please log in");
+      return false;
+    }
+    return true;
+  }
+
   function removeOptimisticTodo(todos) {
     // return all 'real' todos
     return todos.filter((todo) => {
@@ -78,6 +86,7 @@ function Home() {
     // const todoValue = input.description;
     // const todoUrl = input.url;
     // console.log(todoValue);
+    if (!isLoggedIn()) return false;
 
     Object.keys(input).forEach((key) => {
       if (!input[key]) {
@@ -145,6 +154,7 @@ function Home() {
   const deleteTodo = (e) => {
     // const { todos } = this.state;
     const todoId = e.target.dataset.id;
+    if (!isLoggedIn()) return false;
 
     // Optimistically remove todo from UI
     const filteredTodos = todos.reduce(
@@ -191,7 +201,8 @@ function Home() {
   };
 
   const handleTodoCheckbox = (event) => {
-    // const { todos } = this.state;
+    if (!isLoggedIn()) return false;
+
     const { target } = event;
     const todoCompleted = target.checked;
     const todoId = target.dataset.id;
@@ -249,6 +260,7 @@ function Home() {
     const todoId = event.target.dataset.key;
     const field = event.target.dataset.field;
     // console.log(event.currentTarget.name);
+    console.log("UPDATE TODO TITLE");
     console.log(event);
     console.log(currentValue);
     console.log(todoId);
@@ -412,11 +424,10 @@ function Home() {
 
     return todosByDate.map((todo, i) => {
       const { data, ref } = todo;
-      console.log(todo);
       const id = getTodoId(todo);
       // only show delete button after create API response returns
       let deleteButton;
-      if (ref) {
+      if (ref && user && data.author === user.sub) {
         deleteButton = (
           <button data-id={id} onClick={deleteTodo}>
             delete
@@ -427,23 +438,27 @@ function Home() {
       return (
         <div key={i} className="todo-item">
           <label className="todo">
-            <input
-              data-id={id}
-              className="todo__state"
-              type="checkbox"
-              onChange={handleTodoCheckbox}
-              checked={data.completed}
-            />
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 200 25"
-              className="todo__icon"
-            >
-              <use xlinkHref={`${boxIcon}`} className="todo__box"></use>
-              <use xlinkHref="#todo__check" className="todo__check"></use>
-            </svg>
+            {user && data.author === user.sub && (
+              <>
+                <input
+                  data-id={id}
+                  className="todo__state"
+                  type="checkbox"
+                  onChange={handleTodoCheckbox}
+                  checked={data.completed}
+                />
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 200 25"
+                  className="todo__icon"
+                >
+                  <use xlinkHref={`${boxIcon}`} className="todo__box"></use>
+                  <use xlinkHref="#todo__check" className="todo__check"></use>
+                </svg>
+              </>
+            )}
             <div className="todo-list-title">
-              {Object.keys(data).map((field) => {
+              {["description", "url"].map((field) => {
                 return (
                   <ContentEditable
                     key={`${id}-${field}`}
