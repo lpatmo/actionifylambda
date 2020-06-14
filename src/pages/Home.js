@@ -438,7 +438,7 @@ function Home() {
       return (
         <div key={i} className="todo-item">
           <label className="todo">
-            {user && data.author === user.sub && (
+            {user && data.author === user.sub ? (
               <>
                 <input
                   data-id={id}
@@ -455,39 +455,34 @@ function Home() {
                   <use xlinkHref={`${boxIcon}`} className="todo__box"></use>
                   <use xlinkHref="#todo__check" className="todo__check"></use>
                 </svg>
+
+                <div className="todo-list-title">
+                  {["description", "url"].map((field) => {
+                    return (
+                      // {user && data.author === user.sub ? (
+                      <ContentEditable
+                        key={`${id}-${field}`}
+                        field={field}
+                        tagName="span"
+                        editKey={`${id}-${field}`}
+                        onBlur={updateTodoTitle} // save on enter/blur
+                        html={data[field]}
+                      />
+                      //  ) : null}
+                    );
+                  })}
+                </div>
               </>
+            ) : (
+              //Non-editable content
+              <div className="todo-list-title">
+                {["description", "url"].map((field) => {
+                  return <p>{data[field]}</p>;
+                })}
+              </div>
             )}
-            <div className="todo-list-title">
-              {["description", "url"].map((field) => {
-                return (
-                  <ContentEditable
-                    key={`${id}-${field}`}
-                    field={field}
-                    tagName="span"
-                    editKey={`${id}-${field}`}
-                    onBlur={updateTodoTitle} // save on enter/blur
-                    html={data[field]}
-                    // onChange={this.handleDataChange} // save on change
-                  />
-                );
-              })}
-              {/* <ContentEditable
-                tagName="span"
-                editKey={`${id}-description`}
-                onBlur={updateTodoTitle} // save on enter/blur
-                html={data.description}
-                // onChange={this.handleDataChange} // save on change
-              />
-              <ContentEditable
-                tagName="span"
-                editKey={`${id}-url`}
-                onBlur={updateTodoTitle} // save on enter/blur
-                html={data.url}
-                // onChange={this.handleDataChange} // save on change
-              /> */}
-            </div>
           </label>
-          {deleteButton}
+          {user && data.author === user.sub && deleteButton}
         </div>
       );
     });
