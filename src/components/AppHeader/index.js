@@ -14,10 +14,10 @@ const AppHeader = (props) => {
           <div className="app-left-nav">
             <div className="app-title-text">
               <h1 className="app-title">
-                <Link to="/">Home</Link>
+                <Link to="/">Actionify</Link>
               </h1>
-              {isAuthenticated && user && <Link to="/profile">Profile</Link>}
-              <p className="app-intro">Using FaunaDB & Netlify functions</p>
+
+              <p className="app-intro">Actionify the News</p>
             </div>
           </div>
         </div>
@@ -31,6 +31,7 @@ const AppHeader = (props) => {
           {!isAuthenticated && <button onClick={login}>Login</button>}
           {isAuthenticated && user && (
             <>
+              {isAuthenticated && user && <Link to="/profile">My Actions</Link>}
               <button>{user.name}</button>
               <button onClick={logout}>Logout</button>
             </>

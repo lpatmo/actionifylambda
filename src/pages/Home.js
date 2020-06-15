@@ -347,7 +347,7 @@ function Home() {
                 </svg>
 
                 <div className="todo-list-title">
-                  {["description", "url"].map((field) => {
+                  {["description", "url", "location"].map((field) => {
                     return (
                       // {user && data.author === user.sub ? (
                       <>
@@ -363,14 +363,14 @@ function Home() {
                       //  ) : null}
                     );
                   })}
-                  <p>{date}</p>
+                  <p className="todo-list-title">{date}</p>
                 </div>
               </>
             ) : (
               //Non-editable content
               <div className="todo-list-title">
                 {["description", "url"].map((field) => {
-                  return <p>{data[field]}</p>;
+                  return <span>{data[field]}</span>;
                 })}
               </div>
             )}
@@ -403,8 +403,25 @@ function Home() {
             autoComplete="off"
             style={{ marginRight: 20 }}
           />
+          <input
+            className="todo-create-input"
+            placeholder="Location"
+            name="location"
+            onChange={handleInputChange}
+            autoComplete="off"
+            style={{ marginRight: 20 }}
+          />
+          <select
+            name="tags"
+            onChange={handleInputChange}
+            className="todo-create-input"
+          >
+            <option>Select a tag</option>
+            <option>covid19</option>
+            <option>Black Lives Matter</option>
+          </select>
           <div className="todo-actions">
-            <button className="todo-create-button">Create todo</button>
+            <button className="todo-create-button">Submit</button>
           </div>
         </form>
 

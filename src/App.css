@@ -52,6 +52,10 @@
   margin-left: 45px;
   width: 470px;
 }
+.todo-list-title .editable:first-child {
+  font-size: 22px;
+  font-weight: 700;
+}
 .todo-list-title:hover span[contenteditable="false"]:before {
   content: "click to edit";
   position: absolute;
@@ -168,6 +172,7 @@
 
 .todo__state:checked ~ .todo-list-title {
   text-decoration: line-through;
+  background: yellow;
 }
 
 .todo__box {
