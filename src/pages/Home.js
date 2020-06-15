@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef, useContext } from "react";
 import ContentEditable from "../components/ContentEditable";
 import SettingsMenu from "../components/SettingsMenu";
-import SettingsIcon from "../components/SettingsIcon";
 import analytics from "../utils/analytics";
 import api from "../utils/api";
 import sortByDate from "../utils/sortByDate";
@@ -10,11 +9,6 @@ import "../App.css";
 import { Auth0Context } from "../contexts/auth0-context";
 
 function Home() {
-  // state = {
-  //   todos: [],
-  //   showMenu: false,
-  // };
-
   const [input, setInput] = useState({});
   const [todos, setTodos] = useState([]);
   const [showMenu, setShowMenu] = useState(false);
@@ -44,9 +38,6 @@ function Home() {
       }
 
       console.log("all todos", todos);
-      // this.setState({
-      //   todos: todos,
-      // });
       setTodos(todos);
     });
   }, []);
@@ -83,9 +74,6 @@ function Home() {
 
   const saveTodo = (e) => {
     e.preventDefault();
-    // const todoValue = input.description;
-    // const todoUrl = input.url;
-    // console.log(todoValue);
     if (!isLoggedIn()) return false;
 
     Object.keys(input).forEach((key) => {
@@ -97,14 +85,7 @@ function Home() {
     }); //Validation for if field is empty
 
     // reset input to empty
-    // inputElement.value = "";
     setInput({});
-
-    // const todoInfo = {
-    //   title: todoValue,
-    //   url: todoUrl,
-    //   completed: false,
-    // };
 
     const todoInfo = { ...input, completed: false, author: user.sub };
     // Optimistically add todo to UI
@@ -116,10 +97,6 @@ function Home() {
     ];
 
     const optimisticTodoState = newTodoArray.concat(todos);
-
-    // this.setState({
-    //   todos: optimisticTodoState,
-    // });
 
     setTodos(optimisticTodoState);
 
@@ -135,19 +112,11 @@ function Home() {
         });
         // remove temporaryValue from state and persist API response
         const persistedState = removeOptimisticTodo(todos).concat(response);
-        // Set persisted value to state
-        // this.setState({
-        //   todos: persistedState,
-        // });
         setTodos(persistedState);
       })
       .catch((e) => {
         console.log("An API error occurred", e);
         const revertedState = removeOptimisticTodo(todos);
-        // Reset to original state
-        // this.setState({
-        //   todos: revertedState,
-        // });
         setTodos(revertedState);
       });
   };
@@ -189,11 +158,6 @@ function Home() {
       .catch((e) => {
         console.log(`There was an error removing ${todoId}`, e);
         // Add item removed back to list
-        // this.setState({
-        //   todos: filteredTodos.optimisticState.concat(
-        //     filteredTodos.rollbackTodo
-        //   ),
-        // });
         setTodos(
           filteredTodos.optimisticState.concat(filteredTodos.rollbackTodo)
         );
@@ -215,30 +179,6 @@ function Home() {
       }
       return todo;
     });
-
-    // this.setState(
-    //   {
-    //     todos: updatedTodos,
-    //   },
-    //   () => {
-    // api
-    //   .update(todoId, {
-    //     completed: todoCompleted,
-    //   })
-    //   .then(() => {
-    //     console.log(`update todo ${todoId}`, todoCompleted);
-    //     const eventName = todoCompleted
-    //       ? "todoCompleted"
-    //       : "todoUnfinished";
-    //     analytics.track(eventName, {
-    //       category: "todos",
-    //     });
-    //   })
-    //   .catch((e) => {
-    //     console.log("An API error occurred", e);
-    //   });
-    //   }
-    // );
     setTodos(updatedTodos);
     api
       .update(todoId, {
@@ -279,31 +219,6 @@ function Home() {
       }
       return todo;
     });
-
-    // only set state if input different
-    // if (isDifferent) {
-    //   this.setState(
-    //     {
-    //       todos: updatedTodos,
-    //     },
-    //     () => {
-    // api
-    //   .update(todoId, {
-    //     title: currentValue,
-    //   })
-    //   .then(() => {
-    //     console.log(`update todo ${todoId}`, currentValue);
-    //     analytics.track("todoUpdated", {
-    //       category: "todos",
-    //       label: currentValue,
-    //     });
-    //   })
-    //   .catch((e) => {
-    //     console.log("An API error occurred", e);
-    //   });
-    //     }
-    //   );
-    // }
     if (isDifferent) {
       console.log("UPDATE");
       console.log(field);
@@ -356,28 +271,6 @@ function Home() {
       return false;
     }
 
-    // this.setState(
-    //   {
-    //     todos: data.optimisticState,
-    //   },
-    //   () => {
-    //     setTimeout(() => {
-    //       this.closeModal();
-    //     }, 600);
-
-    // api
-    //   .batchDelete(data.completedTodoIds)
-    //   .then(() => {
-    //     console.log(`Batch removal complete`, data.completedTodoIds);
-    //     analytics.track("todosBatchDeleted", {
-    //       category: "todos",
-    //     });
-    //   })
-    //   .catch((e) => {
-    //     console.log("An API error occurred", e);
-    //   });
-    //   }
-    // );
     setTodos(data.optimisticState);
     api
       .batchDelete(data.completedTodoIds)
@@ -401,17 +294,12 @@ function Home() {
     });
   };
   const openModal = () => {
-    // this.setState({
-    //   showMenu: true,
-    // });
     setShowMenu(true);
     analytics.track("modalOpened", {
       category: "modal",
     });
   };
   const renderTodos = () => {
-    // const { todos } = this.state;
-
     if (!todos || !todos.length) {
       // Loading State here
       return null;
@@ -424,6 +312,8 @@ function Home() {
 
     return todosByDate.map((todo, i) => {
       const { data, ref } = todo;
+      const date = new Date(todo.ts / 1000).toDateString();
+      console.log(date);
       const id = getTodoId(todo);
       // only show delete button after create API response returns
       let deleteButton;
@@ -460,17 +350,20 @@ function Home() {
                   {["description", "url"].map((field) => {
                     return (
                       // {user && data.author === user.sub ? (
-                      <ContentEditable
-                        key={`${id}-${field}`}
-                        field={field}
-                        tagName="span"
-                        editKey={`${id}-${field}`}
-                        onBlur={updateTodoTitle} // save on enter/blur
-                        html={data[field]}
-                      />
+                      <>
+                        <ContentEditable
+                          key={`${id}-${field}`}
+                          field={field}
+                          tagName="span"
+                          editKey={`${id}-${field}`}
+                          onBlur={updateTodoTitle} // save on enter/blur
+                          html={data[field]}
+                        />
+                      </>
                       //  ) : null}
                     );
                   })}
+                  <p>{date}</p>
                 </div>
               </>
             ) : (
@@ -490,14 +383,11 @@ function Home() {
   return (
     <>
       <div className="todo-list">
-        <h2>
-          Create todo
-          <SettingsIcon onClick={openModal} className="mobile-toggle" />
-        </h2>
+        <h2>Submit an action</h2>
         <form className="todo-create-wrapper" onSubmit={saveTodo}>
           <input
             className="todo-create-input"
-            placeholder="Add a todo item"
+            placeholder="Action title"
             name="description"
             // ref={(el) => (inputElement = el)}
             ref={inputEl}
@@ -515,7 +405,6 @@ function Home() {
           />
           <div className="todo-actions">
             <button className="todo-create-button">Create todo</button>
-            <SettingsIcon onClick={openModal} className="desktop-toggle" />
           </div>
         </form>
 
