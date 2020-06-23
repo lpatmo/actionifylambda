@@ -12,7 +12,7 @@ exports.handler = (event, context) => {
   const userId = getId(event.path);
   console.log(userId);
   return client
-    .query(q.Paginate(q.Match(q.Index(`action_by_author`), "twitter|51627206")))
+    .query(q.Paginate(q.Match(q.Index(`action_by_author`), decodeURI(userId))))
     .then((response) => {
       const todoRefs = response.data;
       console.log(response);
