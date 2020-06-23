@@ -375,7 +375,7 @@ function Home() {
               </div>
             )}
           </label>
-          {user && data.author === user.sub && deleteButton}
+          {user && (data.author === user.sub || user.moderator) && deleteButton}
         </div>
       );
     });
