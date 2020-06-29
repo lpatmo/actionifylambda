@@ -19,6 +19,7 @@ export function Auth0Provider({ children }) {
         domain: process.env.REACT_APP_DOMAIN,
         client_id: process.env.REACT_APP_clientId,
         redirect_uri: window.location.origin,
+        response_type: "id_token",
       });
       setAuth0Client(auth0);
 
